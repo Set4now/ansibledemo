@@ -1,0 +1,28 @@
+---
+
+- hosts: all
+  remote_user: root
+  vars:
+    ansible_user: admin
+    ansible_pass: admin
+  tasks:
+  - name: create user
+    shell: useradd "{{ ansible_user }}"
+    ignore_errors: true
+
+  - name: create password for user
+    shell: echo "{{ ansible_pass }}" | passwd --stdin "{{ ansible_user }}"
+
+  - name: Setting up ssh keys for passwordless authentication
+    authorized_key:
+      user: "{{ ansible_user }}"
+      state: present
+      key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      path: '/home/"{{ ansible_user }}"/.ssh/authorized_keys'
+      manage_dir: yes
+
+  - name: Providing sudo access
+    lineinfile:
+      dest: /etc/sudoers
+      insertafter: EOF
+      line: '"{{ ansible_user }}" ALL=(ALL) NOPASSWD: ALL'
