@@ -1,0 +1,77 @@
+---
+- hosts: nagios_master
+  remote_user: ec2-user
+  become: yes
+  become_method: sudo
+  #gather_facts: no
+  vars_files:
+    - /etc/ansible/pass.yml
+  tasks:
+  - name: Install dependencies packages
+    package:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - ["apache2", "php", "gcc", "glibc*", "gd", "gd-devel"]
+    when: ansible_os_family == "Debian"
+  - name: Install dependencies packages
+    package:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - ["httpd", "php", "gcc", "glibc*", "gd"]
+    when: ansible_os_family == "RedHat"
+    ignore_errors: yes
+  - name: Creating Nagios user
+    user:
+      name: "{{ nagios_user }}"
+      shell: /bin/bash
+      comment: "Nagios user"
+      password: "{{ nagios_user_pass }}"
+      update_password: on_create
+  - name: Creating Group for nagios_user
+    group:
+      name: nagcmd
+      state: present
+  - name: Adding nagios user to nagcmd group
+    shell: usermod -a -G nagcmd nagios; usermod -a -G nagcmd apache
+  - name: copying nagios source files 
+    copy:
+      src: /etc/ansible/Files/nagios-4.1.1.tar.gz
+      dest: /tmp/nagios-4.1.1.tar.gz
+      force: no
+  - name: copying nagios plugins files
+    copy:
+      src: /etc/ansible/Files/nagios-plugins-2.0.3.tar.gz
+      dest: /tmp/nagios-plugins-2.0.3.tar.gz
+      force: no
+  - name: Extract nagios Tar files
+    shell: tar -xzvf nagios-4.1.1.tar.gz; tar -xzvf nagios-plugins-2.0.3.tar.gz
+    args:
+      chdir: /tmp
+      creates: /tmp/nagios-4.1.1
+  - name: Configure and Install Nagios
+    shell: ./configure --with-command-group=nagcmd;make all;make install;make install-init;make install-config;make install-commandmode;make install-webconf
+    args:
+      chdir: /tmp/nagios-4.1.1
+      creates: /usr/local/nagios/bin/nagios
+  - name: Creating Nagios Web GUI admin
+    shell: htpasswd -b -c /usr/local/nagios/etc/htpasswd.users nagiosadmin nagiosadmin
+
+  - name: Start Web services
+    service: 
+      name: httpd
+      enabled: yes
+      state: restarted
+  - name: Compiling and Installing the Nagios Plugings
+    shell: ./configure -—with-nagios-user=nagios -—with-nagios-group=nagios;make;make install
+    args: 
+      chdir: /tmp/nagios-plugins-2.0.3
+
+  - name: Start Nagios service
+    service:
+      name: nagios
+      state: started
+      enabled: yes
+
+
