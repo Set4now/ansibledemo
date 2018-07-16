@@ -1,0 +1,16 @@
+---
+
+-
+  hosts: centos:ubuntu
+  gather_facts: true
+
+  tasks:
+    - name: gather host variables
+      debug:
+        msg: "{{ hostvars[ansible_hostname].ansible_port | default('') }}"
+
+    - name: get common variables
+      debug:
+       msg: "{{ common_msg }}"
+
+...

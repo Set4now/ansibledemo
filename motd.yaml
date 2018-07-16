@@ -1,0 +1,38 @@
+---
+
+- 
+ 
+ hosts: centos:ubuntu
+# gather_facts: false
+ gather_facts: yes
+
+ vars:
+   motd_centos: "Welcome to centos's arena\n"
+   motd_ubuntu: "Welcome to ubuntu's arena\n"
+
+ tasks:
+   - name: Generating MOTD file on centos machine
+     copy: 
+       content: "{{ motd_centos }}"
+       dest: /etc/motd
+     notify: motd changed
+     when: ansible_distribution == "CentOS"
+
+   - name: Generating MOTD file on centos machine
+     copy: 
+       content: "{{ motd_ubuntu }}"
+       dest: /etc/motd
+     notify: motd changed
+     when: ansible_distribution == "Ubuntu"
+
+
+ handlers:
+   - name: motd changed
+     debug: 
+       msg: "MOTD has been configured"
+
+
+
+...
+
+

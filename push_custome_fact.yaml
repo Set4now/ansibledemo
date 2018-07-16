@@ -1,0 +1,26 @@
+---
+
+-
+ hosts: all
+ gather_facts: true
+
+ tasks:
+   - name: create custom facts directory
+     file:
+       path: /etc/ansible/facts.d
+       recurse: yes
+       state: directory
+   - name: push facts from master to remote nodes
+     copy:
+       src: getfacts.fact
+       dest: /etc/ansible/facts.d/getfacts.fact
+       mode: 0755
+   - name: Refresh Facts
+     setup:
+
+
+   - name: validate the custom facts
+     debug:
+       msg: "{{  ansible_local.getfacts.custom_data.flavour}}"
+
+...

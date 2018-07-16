@@ -1,0 +1,11 @@
+[control]
+Sumans-MacBook-Air.local ansible_connection=local
+
+[centos]
+dockermaster ansible_become=yes ansible_become_method=sudo ansible_port=22
+
+[ubuntu]
+ubuntu-node ansible_user=root
+
+[all:vars]
+common_msg="Ansible Learning nodes"

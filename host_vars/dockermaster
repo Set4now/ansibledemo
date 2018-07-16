@@ -1,0 +1,5 @@
+---
+ansible_become: yes 
+ansible_become_method: sudo 
+ansible_port: 22
+...
