@@ -1,0 +1,90 @@
+---
+
+-
+  hosts: centos:ubuntu
+  gather_facts: true
+
+  tasks:
+    - name: Setting up nginx repo of centos ( Redhat Family)
+      template:
+        src: templates/nginx.repo.j2
+        dest: /etc/yum.repos.d/nginx.repo
+      when: ansible_distribution == "CentOS"
+
+    - name: Setting up nginx repo of centos ( Redhat Family)
+      template:  
+        src: templates/nginx.list.j2
+        dest: /etc/apt/sources.list.d/nginx.list
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Adding signature key for nginx
+      copy:
+        src: files/nginx_signing.key
+        dest: /tmp/nginx_signing.key
+
+    - name: adding nginx signature key to repo
+      command: apt-key add nginx_signing.key
+      args:
+        chdir: /tmp
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Installing nginx
+      package:
+        name: nginx
+        state: present
+
+    # - name: Creating nginx conf directories (sites enabled)
+    #   command: mkdir /etc/nginx/sites-enabled/
+
+    # - name: Creating nginx conf directories (sites available)
+    #   command: mkdir /etc/nginx/sites-available/
+
+    -  name: Creating nginx conf directories (sites enabled)
+       file: 
+         path: /etc/nginx/sites-enabled/
+         state: directory
+
+
+    - name: Creating nginx conf directories (sites available)
+      file: 
+        path: /etc/nginx/sites-available/
+        state: directory
+
+
+
+    - name: Pushing server virtual host conf files
+      copy: 
+        src: files/mysite.conf
+        dest: /etc/nginx/sites-available/mysite.conf
+    
+    - name: Creating sys links from site available to site enables
+      file:
+        src: /etc/nginx/sites-available/mysite.conf
+        dest: /etc/nginx/sites-enabled/mysite.conf
+        state: link
+
+
+    - name: copying nginx.conf
+      copy: 
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        mode: 644
+
+    - name: creating html root directory
+      command: mkdir -p /var/www/html
+
+    - name: copying index.html
+      template: 
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+
+    -  name: Start NGINX 
+       service:
+         name: nginx 
+         state: restarted
+         enabled: yes        
+
+
+
+
+...

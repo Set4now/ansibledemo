@@ -1,0 +1,15 @@
+---
+-
+ hosts: all
+ gather_facts: true
+ 
+ tasks:
+  - name: Check if its the same hostname
+    debug:
+     msg: >
+          <--- checking IP address---->
+          {% for ip in ansible_all_ipv4_addresses -%}
+            IP address entry {{ loop.index }} == {{ ip }}
+          {% endfor %}
+
+...

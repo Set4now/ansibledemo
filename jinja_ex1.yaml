@@ -1,0 +1,20 @@
+---
+-
+ hosts: all
+ gather_facts: true
+ 
+ tasks:
+  - name: Check if its the same hostname
+    debug:
+     msg: >
+          <--- Matching Hostnames---->
+          {# chech hostname with if statement with jinja style -#}
+          {% if ansible_hostname == "ubuntu-node" -%}
+             This is ubuntu-node
+          {% elif ansible_hostname == "dockermaster" -%}
+             This is docker master server managed by ansible
+          {% else -%}
+             May be the Local or the control machine
+          {% endif %}
+
+...

@@ -1,0 +1,13 @@
+---
+-
+ hosts: all
+ gather_facts: true
+ 
+ tasks:
+  - name: Check if its the same hostname
+    debug:
+     msg: >
+          {% for i in range(1, 11) -%}
+            {{ i }}
+          {% endfor %}
+...
