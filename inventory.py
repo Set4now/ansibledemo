@@ -37,7 +37,8 @@ class DynamicInventory(object):
 
     def empty_inventory(self):
        return {}
-def fetch_inventory(self):
+     
+    def fetch_inventory(self):
         return {
                      "centos": {
                             "hosts": ["dockermaster"],
