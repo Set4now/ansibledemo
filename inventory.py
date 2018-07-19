@@ -24,7 +24,9 @@ class DynamicInventory(object):
            self.inventory = self.fetch_inventory()
            #self.fetch_inventory()
        elif self.args.host:
-           self.inventory = self.empty_inventory()
+           temp_inventory = self.fetch_inventory()
+           self.inventory = temp_inventory["_meta"]["hostvars"][self.args.host]
+           #self.inventory = self.empty_inventory()
            #self.empty_inventory()
        else:
           usage()
@@ -33,7 +35,7 @@ class DynamicInventory(object):
        #print self.inventory
 
     def show_inventory(self):
-       return self.inventory
+       print json.dumps(self.inventory, indent=4)
 
     def empty_inventory(self):
        return {}
@@ -45,7 +47,30 @@ class DynamicInventory(object):
                             "vars": {
                                      "ansible_ssh_port": "22"
                              }
-                      }
+                      },
+                      "_meta": {
+                               "hostvars": {
+                                        "dockermaster": {
+                                                "ansible_become" : "yes",
+                                                "ansible_become_method" : "sudo"
+                                                },
+                                        "ubuntu-node": {
+                                                "ansible_user": "root"
+                                                },
+                                        "Sumans-MacBook-Air.local": {
+                                                "ansible_connection" : "local",
+                                                "ansible_become" : "yes",
+                                                "ansible_become_method" : "sudo"
+                                                }
+                                           }
+                                },
+
+                     "all": {
+                         "children" : ["ungrouped"]
+                            },
+                    "ungrouped": {
+                             "hosts": ["Sumans-MacBook-Air.local"]
+                                 }
                }
 
     def read_arg(self):
@@ -55,4 +80,4 @@ class DynamicInventory(object):
         self.args = parser.parse_args()
 
 DI=DynamicInventory()
-print DI.show_inventory()
+DI.show_inventory()
