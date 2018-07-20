@@ -4,6 +4,11 @@ import sys
 import argparse
 import json
 
+import urllib
+url="http://localhost:80"
+data=urllib.urlopen(url)
+#print data.read()
+
 def usage():
  print "Either user --list or --host as a parameter"
 
@@ -40,6 +45,11 @@ class DynamicInventory(object):
     def empty_inventory(self):
        return {}
      
+     
+    def api_data(self):
+       return data.read()
+     
+    
     def fetch_inventory(self):
         return {
                      "centos": {
