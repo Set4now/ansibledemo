@@ -26,8 +26,9 @@ class DynamicInventory(object):
        self.read_arg()
        
        if self.args.list:
-           self.inventory = self.fetch_inventory()
+           #self.inventory = self.fetch_inventory()
            #self.fetch_inventory()
+           self.inventory = self.api_data()
        elif self.args.host:
            temp_inventory = self.fetch_inventory()
            self.inventory = temp_inventory["_meta"]["hostvars"][self.args.host]
