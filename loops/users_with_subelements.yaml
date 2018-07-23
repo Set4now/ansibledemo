@@ -1,0 +1,37 @@
+---
+-
+  hosts: ubuntu:centos
+  gather_facts: false
+  
+  tasks:
+    - name: Creating user using loops
+      user: 
+        name: "{{ item.1 }}"
+        # title is jinha2 filter makes the first letter in Uppercase
+        comment: "{{  item.1 | title }} {{ item.0.surname }}"
+        #with_subelements expects a list ( here this is list of dictionaries). So user_family is the first item item here
+        # and item.0 is surname and item.1 is members 
+      with_subelements:
+          - family: 
+              surname: taylor
+              members:
+                - tom
+                - herry
+                - jack
+          - members
+           
+      notify: Users created
+
+  handlers:
+      - name: Users created
+        debug:
+          msg: The users have been successfully created
+      
+
+
+
+
+
+
+
+...

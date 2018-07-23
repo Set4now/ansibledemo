@@ -1,0 +1,21 @@
+
+---
+-
+  hosts: centos:ubuntu
+  gather_facts: false
+
+  tasks:
+   - name: add ssh pub keys
+     authorized_key:
+        user: "jack"
+        key: "{{ item }}"
+     with_file:
+        - /Users/sumandeb/.ssh/id_rsa.pub
+  
+  
+
+
+
+
+
+...

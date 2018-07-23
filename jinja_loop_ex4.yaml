@@ -1,0 +1,22 @@
+---
+
+-
+ hosts: centos:ubuntu
+ gather_facts: true
+
+ tasks: 
+  - name: create MOTD file
+    copy:
+      content: "This is genrated today for {{ item }} system"
+      dest: /etc/motd
+    with_items: [ 'CentOS', 'Ubuntu']
+    when: ansible_distribution == item
+    notify: MOTD changed
+
+ handlers:
+  - name: MOTD changed
+    debug:
+     msg: "The MOTD file has been changed!!" 
+    
+
+...

@@ -1,0 +1,34 @@
+---
+-
+  hosts: ubuntu:centos
+  gather_facts: false
+  
+  tasks:
+    - name: Creating user using loops
+      user: 
+        # Taking the entire dictionary as key and then accessing its item within as '.'
+        name: "{{ item.key }}"
+        # here the value is the value of the keys and then the items inside the values represented by '.'
+        comment: "{{ item.value.full_name }}"
+      with_dict:
+         tom: 
+           full_name: tom taylor
+         herry:
+           full_name: herry taylor
+         jack:
+           full_name: jack taylor
+      notify: Users created
+
+  handlers:
+      - name: Users created
+        debug:
+          msg: The users have been successfully created
+      
+
+
+
+
+
+
+
+...

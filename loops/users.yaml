@@ -1,0 +1,28 @@
+---
+-
+  hosts: ubuntu:centos
+  gather_facts: false
+  
+  tasks:
+    - name: Creating user using loops
+      user: 
+        name: "{{ item }}"
+      with_items:
+        - tom
+        - herry
+        - jack
+      notify: Users created
+
+  handlers:
+      - name: Users created
+        debug:
+          msg: The users have been successfully created
+      
+
+
+
+
+
+
+
+...

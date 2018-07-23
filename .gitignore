@@ -1,3 +1,5 @@
 **/venv27
-!venv27
+/Users/sumandeb/ansible_project/venv27
 .gitignore
+*.retry
+./*/.retry

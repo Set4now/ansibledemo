@@ -1,0 +1,61 @@
+---
+-
+  hosts: ubuntu:centos
+  gather_facts: false
+  
+  tasks:
+    - name: Creating user using loops
+      user: 
+        name: "{{ item.1 }}"
+        # title is jinha2 filter makes the first letter in Uppercase
+        comment: "{{  item.1 | title }} {{ item.0.surname }}"
+        #with_subelements expects a list ( here this is list of dictionaries). So user_family is the first item item here
+        # and item.0 is surname and item.1 is members 
+      with_subelements:
+          - family: 
+              surname: taylor
+              members:
+                - tom
+                - herry
+                - jack
+          - members
+           
+      notify: Users created
+    - name: Create User  directories
+      file:
+        dest: "/home/{{ item.0 }}/{{  item.1 }}"
+        owner: "{{ item.0 }}"
+        group: "{{ item.0 }}"
+        state: directory
+        # list of lists, each item of the second list will be processed for each individual item of the first list
+        # so /home/tom/images , /home/tom/docs, /home/tom/shared will be created.
+      with_nested:
+          - [tom, herry, jack]
+          - [images, docs, shared]
+       
+
+    - name: Creating User specfic directories
+      file:
+        dest: "/home/{{ item.0 }}/{{ item.1 }}"
+        owner: "{{ item.0 }}"
+        group: "{{ item.0 }}"
+        state: directory
+       # This is a one to one mapping so tom to python and herry to java and jack to php
+       # this will create /home/tom/python, /home/jerry/java, /home/jack/php
+      with_together:
+          - [tom, herry, jack]
+          - [pyhton, java, php]
+
+  handlers:
+      - name: Users created
+        debug:
+          msg: The users have been successfully created
+      
+
+
+
+
+
+
+
+...
